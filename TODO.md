@@ -1,0 +1,8 @@
+- [x] Parsing
+- [x] Approximation / Equality
+- [x] LATEX
+- [x] Equation
+- [x] Graph
+    - [x] 2D Graph
+    - [x] 3D Graph
+- [ ] Logging  
