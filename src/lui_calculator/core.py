@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import requests
 import sympy
 from sympy.parsing.sympy_parser import parse_expr, standard_transformations, \
@@ -31,7 +33,7 @@ def latex_needed(expression, printer=custom_printer) -> bool:
         return True
 
 
-def latex2png(latex_str: str, outfile: str = "output.png"):
+def latex2png(latex_str: str, outfile: str | Path = "output.png"):
     response = requests.get(
         r"https://latex.codecogs.com/png.download?\dpi{110}%20\fn_phv%20\huge%20{\color{White}" + latex_str + "}")
     if response.ok:
@@ -41,7 +43,8 @@ def latex2png(latex_str: str, outfile: str = "output.png"):
         raise ConnectionError("https://latex.codecogs.com/ don't respond correctly")
 
 
-def calc(expression: str, latex: None | bool = False, max_length: None | int = None) -> str:
+def calc(expression: str, latex: None | bool = False, output: str | Path = "output.png", max_length: None | int = None)\
+        -> str | True:
     result = parse(expression)
 
     # TODO: Approximation for solve-set
@@ -62,8 +65,11 @@ def calc(expression: str, latex: None | bool = False, max_length: None | int = N
     if not latex:
         return complements.printer_with_complement(result)
     try:
-        latex2png(complements.printer_with_complement(result, printer=sympy.latex).replace("≈", r"\approx"))
-        return ""
+        latex2png(
+            complements.printer_with_complement(result, printer=sympy.latex).replace("≈", r"\approx"),
+            outfile=output
+        )
+        return True
     except ConnectionError as e:
         print(e)
         return complements.printer_with_complement(result)
