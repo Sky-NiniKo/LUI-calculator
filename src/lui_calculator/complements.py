@@ -97,7 +97,10 @@ def printer_with_complement_for_complex(expression, complex_number, sign, is_use
         multiply_by_i = printer(sympy.Mul(sympy.Number(2), sympy.I))[1:]
         complex_number = (complex_number[0], str(complex_number[1]) + multiply_by_i)
 
-    return f"{printer(expression)} {sign} {complex_number[1]}" if complex_number[0] == 0 else f"{printer(expression)} {sign} {complex_number[0]} + {complex_number[1]}"
+    if complex_number[0] == 0:
+        return f"{printer(expression)} {sign} {complex_number[1]}"
+    else:
+        return f"{printer(expression)} {sign} {complex_number[0]} + {complex_number[1]}"
 
 
 def sign_complement(expression, printer=custom_printer) -> tuple[str | None, str | None]:
