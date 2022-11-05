@@ -53,7 +53,7 @@ def calc(expression: str, latex: None | bool = False, output: str | Path = "outp
         if latex is False:
             return str(custom_printer(solve_set))
         try:
-            latex2png(sympy.latex(solve_set, outfile=output))
+            latex2png(sympy.latex(solve_set), outfile=output)
             return ""
         except ConnectionError as e:
             print(e)
