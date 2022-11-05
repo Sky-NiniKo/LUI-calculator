@@ -1,5 +1,5 @@
 from .core import calc, latex_needed, latex2png, parse
-from .complement import printer_with_complement
+from .complements import printer_with_complement
 from .plot import make_plot, save_plot_image, save_plot_video
 
 __all__ = [

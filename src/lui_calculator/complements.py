@@ -1,9 +1,17 @@
-from typing import Any, Union
+from typing import Any
 
 import sympy
 
+from .printer import custom_printer
 
-def complement_for_real(real) -> tuple[Union[float, int], str, bool]:
+
+# TODO: Repeating digit simplify by an over-line
+# enum str + bool
+class Sign:
+    pass
+
+
+def complement_for_real(real) -> tuple[float | int, str, bool]:
     """
     Return an equality or an approximation of a real number
     :param real: any real number of sympy
@@ -25,8 +33,8 @@ def complement_for_real(real) -> tuple[Union[float, int], str, bool]:
     try:
         if not real.is_real:
             raise ValueError("Only real number is accepted")
-    except AttributeError:
-        raise ValueError("Only real number is accepted")
+    except AttributeError as e:
+        raise ValueError("Only real number is accepted") from e
 
     if real.is_Integer:
         return int(real), "=", False
@@ -64,8 +72,8 @@ def complement_for_complex(complex_number) -> tuple[tuple[Any, Any], str, bool]:
     try:
         if not complex_number.is_complex:
             raise ValueError("Only complex number is accepted")
-    except AttributeError:
-        raise ValueError("Only complex number is accepted")
+    except AttributeError as e:
+        raise ValueError("Only complex number is accepted") from e
 
     real, imaginary = complex_number.as_real_imag()
 
@@ -80,23 +88,27 @@ def complement_for_complex(complex_number) -> tuple[tuple[Any, Any], str, bool]:
     return (real, imaginary), sign, True
 
 
-def printer_with_complement_for_complex(expression, complex_number, sign, is_useful, printer=sympy.pretty) -> str:
-    if is_useful:
-        if complex_number[1] == 1:
-            complex_number = (complex_number[0], printer(sympy.I))
-        else:
-            multiply_by_i = printer(sympy.Mul(sympy.Number(2), sympy.I))[1:]
-            complex_number = (complex_number[0], str(complex_number[1]) + multiply_by_i)
-
-        if complex_number[0] == 0:
-            return f"{printer(expression)} {sign} {complex_number[1]}"
-        else:
-            return f"{printer(expression)} {sign} {complex_number[0]} + {complex_number[1]}"
-    else:
+def printer_with_complement_for_complex(expression, complex_number, sign, is_useful, printer=custom_printer) -> str:
+    if not is_useful:
         return str(printer(expression))
+    if complex_number[1] == 1:
+        complex_number = (complex_number[0], printer(sympy.I))
+    else:
+        multiply_by_i = printer(sympy.Mul(sympy.Number(2), sympy.I))[1:]
+        complex_number = (complex_number[0], str(complex_number[1]) + multiply_by_i)
+
+    return f"{printer(expression)} {sign} {complex_number[1]}" if complex_number[0] == 0 else f"{printer(expression)} {sign} {complex_number[0]} + {complex_number[1]}"
 
 
-def printer_with_complement(expression, printer=sympy.pretty) -> str:
+def sign_complement(expression, printer=custom_printer) -> tuple[str | None, str | None]:
+    pass
+
+
+def assemble(result, sign, complement) -> str:
+    pass
+
+
+def printer_with_complement(expression, printer=custom_printer) -> str:
     """
     Format an sympy expression with the complement
     :param printer: a sympy printer function

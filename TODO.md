@@ -5,4 +5,5 @@
 - [x] Graph
     - [x] 2D Graph
     - [x] 3D Graph
-- [ ] Logging  
+- [ ] Logging 
+- [ ] Testing complement, printer...

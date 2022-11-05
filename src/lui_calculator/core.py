@@ -1,11 +1,11 @@
-from typing import Union
-
 import requests
 import sympy
 from sympy.parsing.sympy_parser import parse_expr, standard_transformations, \
     implicit_multiplication_application, convert_xor, convert_equals_signs
 
-from . import complement
+from . import complements
+from .utils import exit_after
+from .printer import custom_printer
 
 transformations = standard_transformations + (convert_xor, implicit_multiplication_application, convert_equals_signs)
 
@@ -22,20 +22,18 @@ def parse(expression: str):
     return parse_expr(expression, transformations=transformations, local_dict=local_dict)
 
 
-def latex_needed(expression, printer=sympy.pretty) -> bool:
+def latex_needed(expression, printer=custom_printer) -> bool:
     if expression == sympy.zoo:
         return True
     try:
-        return bool(
-            printer(parse(printer(expression))) != printer(expression)
-        )
+        return printer(parse(printer(expression))) != printer(expression)
     except SyntaxError:
         return True
 
 
 def latex2png(latex_str: str, outfile: str = "output.png"):
     response = requests.get(
-        r"https://latex.codecogs.com/png.latex?\dpi{110}&space;\fn_phv&space;\huge&space;" + latex_str)
+        r"https://latex.codecogs.com/png.download?\dpi{110}%20\fn_phv%20\huge%20{\color{White}" + latex_str + "}")
     if response.ok:
         with open(outfile, "wb+") as file:
             file.write(response.content)
@@ -43,28 +41,47 @@ def latex2png(latex_str: str, outfile: str = "output.png"):
         raise ConnectionError("https://latex.codecogs.com/ don't respond correctly")
 
 
-def calc(expression: str, latex: Union[None, bool] = None) -> str:
+def calc(expression: str, latex: None | bool = False, max_length: None | int = None) -> str:
     result = parse(expression)
 
+    # TODO: Approximation for solve-set
     if result.is_Equality:
         solve_set = sympy.solveset(result)
         if latex is False:
-            return str(sympy.pretty(solve_set))
+            return str(custom_printer(solve_set))
         try:
             latex2png(sympy.latex(solve_set))
             return ""
         except ConnectionError as e:
             print(e)
-            return str(sympy.pretty(solve_set))
+            return str(custom_printer(solve_set))
 
     if latex is None:
         latex = latex_needed(result)
 
     if not latex:
-        return complement.printer_with_complement(result)
+        return complements.printer_with_complement(result)
     try:
-        latex2png(complement.printer_with_complement(result, printer=sympy.latex).replace("≈", r"\approx"))
+        latex2png(complements.printer_with_complement(result, printer=sympy.latex).replace("≈", r"\approx"))
         return ""
     except ConnectionError as e:
         print(e)
-        return complement.printer_with_complement(result)
+        return complements.printer_with_complement(result)
+
+    #   sign, complement = complements.sign_complement(result)
+    #   result = printer(result)
+    #   ...
+    #   if len(complements.assemble(result, sign, complement)) <= max_length:
+    #       return complements.assemble(result, sign, complement)
+    #   elif min(len(result), len(complement)) <= max_length:
+    #       if len(result) <= len(complement):
+    #           return result
+    #       else:
+    #           return complement
+    #   else:
+    #       return None
+
+
+@exit_after(10)
+def secure_calc(expression: str, latex: None | bool = None) -> str:
+    return calc(expression=expression, latex=latex, max_length=2000)

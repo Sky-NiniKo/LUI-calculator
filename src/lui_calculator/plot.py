@@ -17,16 +17,17 @@ def make_plot(expr) -> Plot:
     else:
         x, y = expr.free_symbols
         return sympy.plotting.plot3d(
-            expr, (x, -3, 3), (y, -3, 3), show=False, backend="matplotlib", title=sympy.pretty(expr))
+            expr, (x, -2, 2), (y, -2, 2), show=False, backend="matplotlib", title=sympy.pretty(expr))
 
 
-def save_plot_image(expr, outfile: str = "output.jpg") -> str:
+# todo: support custom spaces | image size ?
+def save_plot_image(expr, outfile: str = "output.png") -> str:
     make_plot(expr).save(outfile)
     return outfile
 
 
 def save_plot_video(expr, outfile: str = "output.mp4") -> str:
-    if not 2 == len(expr.free_symbols):
+    if len(expr.free_symbols) != 2:
         raise ValueError("The number of free_symbols in the expression must be 2")
 
     plot3d = make_plot(expr)

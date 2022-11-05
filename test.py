@@ -1,16 +1,16 @@
-from calculator import calc
+from lui_calculator import calc
 
 if __name__ == '__main__':
     while True:
         print(
-            calc(input())
+            calc(input(), latex=None)
         )
 
 
 """import time
 from multiprocessing import Pool
 
-from calculator import plot, core
+from lui_calculator import plot, core
 
 
 def video(c):
@@ -29,9 +29,9 @@ expressions = tuple((core.parse(expression), i) for i, expression in enumerate((
     "exp(x)*y")))
 
 if __name__ == '__main__':
-    starttime = time.time()
+    start_time = time.time()
     pool = Pool()
     pool.map(video, expressions)
     pool.close()
-    endtime = time.time()
-    print(f"Time taken {endtime-starttime} seconds")"""
+    end_time = time.time()
+    print(f"Time taken {end_time-start_time} seconds")"""

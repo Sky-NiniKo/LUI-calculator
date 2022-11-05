@@ -1,6 +1,6 @@
 import pytest
 
-from calculator.core import calc
+from lui_calculator.core import calc
 
 
 @pytest.mark.parametrize("test_input, expected", [
@@ -61,7 +61,15 @@ def test_calc_real(test_input, expected):
     ("π*ⅈ", "ⅈ⋅π ≈ 3.141592653589793⋅ⅈ")
 ])
 def test_calc_complex(test_input, expected):
-    assert calc(test_input, latex=False) == expected
+    assert calc(test_input) == expected
+
+
+@pytest.mark.parametrize("test_input, expected", [
+    ("100!", "9332621544394415268169923885626670049071596826438162146859296389521759999322991"
+             "5608941463976156518286253697920827223758251185210916864000000000000000000000000"),
+])
+def test_large_number(test_input, expected):
+    assert calc(test_input) == expected
 
 
 @pytest.mark.parametrize("test_input, expected", [
@@ -69,7 +77,7 @@ def test_calc_complex(test_input, expected):
     ("zoo", "zoo")
 ])
 def test_calc_edge_case(test_input, expected):
-    assert calc(test_input, latex=False) == expected
+    assert calc(test_input) == expected
 
 
 @pytest.mark.parametrize("test_input, expected", [
@@ -82,6 +90,7 @@ def test_calc_edge_case(test_input, expected):
     ("cos 0", "1"),
     # ("sin(90°)", "1"),
     # ("cos(90°)", "0")
+    # ("|-1|", "1")
 ])
 def test_calc_function(test_input, expected):
     assert calc(test_input) == expected
@@ -89,6 +98,7 @@ def test_calc_function(test_input, expected):
 
 @pytest.mark.parametrize("test_input, expected", [
     ("3x=5", "{5/3}")
+    # TODO: Add more add test approximation
 ])
 def test_calc_equation(test_input, expected):
-    assert calc(test_input, latex=False) == expected
+    assert calc(test_input) == expected
