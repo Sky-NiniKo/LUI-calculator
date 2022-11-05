@@ -44,7 +44,7 @@ def latex2png(latex_str: str, outfile: str | Path = "output.png"):
 
 
 def calc(expression: str, latex: None | bool = False, output: str | Path = "output.png", max_length: None | int = None)\
-        -> str | True:
+        -> str | bool:
     result = parse(expression)
 
     # TODO: Approximation for solve-set
